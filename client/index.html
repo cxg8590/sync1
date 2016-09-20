@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+    <script type="text/babel" >
+        "use strict";
+		let socket;
+		
+		const init = () =>{
+			socket = io.connect();
+			setupSocket();
+			
+			socket.on('connect', () => {
+				
+				socket.emit('join', 'room1');
+			});
+		}
+		
+		const setupSocket = () => {
+			console.log("setup");
+			
+			socket.on('updatePara', (data) =>{
+				console.log(data);
+				const message = data.message;
+				
+				console.log("mynum: " + message);
+				
+				document.querySelector("#myPara").innerHTML = message;
+				myNum = message;
+			});
+			
+			socket.on('clearPara', (data) =>{
+				document.querySelector("#myPara").innerHTML = "";
+			});
+		}
+		
+		let myNum = 0;
+		
+		const sendMessage = () => {
+			myNum += 5;
+			
+			let messageData = {
+				message: myNum
+			};
+			socket.emit('updatePara', messageData);
+		}
+		
+		setInterval(sendMessage, 3000);
+		
+		window.onload = init;
+    </script>
+</head>
+<body>
+<p>The current value is </p>
+<p id="myPara" ></p>
+<!--<input id="add" type='button' value='add 5'/>-->
+</body>
+</html>
